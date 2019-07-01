@@ -13,7 +13,7 @@ class MySudokuSolver(ExecutableTool):
     name = "My Sudoku Solver"
 
     # TODO: change this to your solver executable
-    path = os.path.join(DIR, "my_solver.sh")
+    path = os.path.join(DIR, "my_solver.py")
 
     @classmethod
     def setup(cls):
