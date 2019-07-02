@@ -32,17 +32,18 @@ class Variables:
         self.width = width
         self.grid_width = floor(sqrt(width))
         self.grids_per_dim = self.width // self.grid_width
-        self._storage = [[[(_get_index(x, y, z), None) for z in range(width)] for y in range(width)] for x in range(width)]
+        self._indices = [[[_get_index(x, y, z) for z in range(width)] for y in range(width)] for x in range(width)]
+        self._values = [[[None for z in range(width)] for y in range(width)] for x in range(width)]
 
     def get_index(self, row_x, column_y, number_z):
-        return self._storage[row_x][column_y][number_z - 1][0]
+        return self._indices[row_x][column_y][number_z - 1]
 
     def get_value(self, row_x, column_y, number_z):
-        return self._storage[row_x][column_y][number_z - 1][1]
+        return self._values[row_x][column_y][number_z - 1]
 
     def set_value(self, index, value):
         row_x, column_y, number_z = _index_to_coordinates(index)
-        self._storage[row_x][column_y][number_z - 1] = (index, value)
+        self._values[row_x][column_y][number_z - 1] = value
 
     def get_max_index(self):
         return _next_index_counter
@@ -51,6 +52,9 @@ class Variables:
         variables_str = ""
         for x in range(self.width):
             for y in range(self.width):
-                variables_str += "({:2},{:2}): {}\n".format(x, y, self._storage[x][y])
+                variables_str += "({:2},{:2}): {}\n".format(x, y, self._indices[x][y])
+        for x in range(self.width):
+            for y in range(self.width):
+                variables_str += "({:2},{:2}): {}\n".format(x, y, self._values[x][y])
 
         return variables_str
