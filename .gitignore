@@ -10,3 +10,4 @@ _downloaded/
 env/
 Vagrantfile
 .vagrant
+.idea
