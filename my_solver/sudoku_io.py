@@ -65,6 +65,7 @@ def clauses_to_cnf(clauses, variables):
     """
     Keyword arguments:
     clauses -- list(list(int))
+    variables -- Variables
 
     Returns:
     string
@@ -78,3 +79,13 @@ def clauses_to_cnf(clauses, variables):
         cnf += "0"
 
     return cnf
+
+def variables_to_sudoku(variables):
+    """
+    Keyword arguments:
+    variables -- Variables
+
+    Returns:
+    string
+    """
+    # TODO

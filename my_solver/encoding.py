@@ -43,17 +43,17 @@ def minimal_encoding(variables, constraints):
     bigwedge_{z=1}^{9} bigwedge_{i = 0}^{2} bigwedge_{j = 0}^{2} bigwedge_{x=1}^{3} bigwedge_{y=1}{3} bigwedge_{k=y+1}^{3} (neg s_(3i+x)(3j+y)z or neg x_(3i+x)(3j+k)z)
     """
     # FIXME
-    for z in range(width):
-        for i in range(grids_per_dim):
-            for j in range(grids_per_dim):
-                for (x, y) in get_grid_xy(variables, i, j):
-                    for _x in range(x, i + grid_width):
-                        clause = [-variables.get_index(x, y, z), -variables.get_index(_x, y, z)]
-                        clauses.append(clause)
+    #for z in range(width):
+    #    for i in range(grids_per_dim):
+    #        for j in range(grids_per_dim):
+    #            for (x, y) in get_grid_xy(variables, i, j):
+    #                for _x in range(x, i + grid_width):
+    #                    clause = [-variables.get_index(x, y, z), -variables.get_index(_x, y, z)]
+    #                    clauses.append(clause)
 
-                    for _y in range(y, j + grid_width):
-                        clause = [-variables.get_index(x, y, z), -variables.get_index(x, _y, z)]
-                        clauses.append(clause)
+    #                for _y in range(y, j + grid_width):
+    #                    clause = [-variables.get_index(x, y, z), -variables.get_index(x, _y, z)]
+    #                    clauses.append(clause)
 
     """
     Already filled-in fields.
