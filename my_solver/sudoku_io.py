@@ -3,6 +3,7 @@ import sys
 
 from sudoku import Variables
 from sys import stderr
+import math
 
 def parse_sudoku(sudoku_file):
     """
@@ -88,4 +89,30 @@ def variables_to_sudoku(variables):
     Returns:
     string
     """
-    # TODO
+    width = variables.width
+    char_length = int(math.log10(width))
+    block_length = int(math.sqr(width))
+
+    # build ending and starting line of sudoku frame
+    block_line = "-" * ((char_length + 1) * block_length + 1)
+    start_end_line = "+" + "+".join(block_line) + "+"
+    print(start_end_line)
+
+    for row_block in range(block_length):
+        for  row in range(block_length):
+            line = ""
+            for col_block in range(block_length):
+                block_line = "| "
+                for col in range(block_length):
+                    for number in range(width):
+                        x = row_block * block_length + row + 1
+                        y = col_block * block_length + col + 1
+                        z = number + 1
+                        if variables.get_value(x, y, z):
+                            n = " " * (char_length - len(str(z))) + z + " "
+                            block_line += n
+                            break
+                line += block_line
+            line += "|"
+            print(line)
+        print(start_end_line)
