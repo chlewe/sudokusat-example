@@ -35,7 +35,7 @@ def parse_sudoku(sudoku_file):
                 if entry[0] == "_":
                     continue
                 else:
-                    constraints.add(variables.get_index(row_index, column_index, int(entry) - 1))
+                    constraints.add(variables.get_index(row_index, column_index, int(entry)))
 
             row_index += 1
 
