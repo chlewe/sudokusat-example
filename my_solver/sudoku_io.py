@@ -1,6 +1,7 @@
 import re
 import sys
 
+from subprocess import Popen, PIPE
 from sudoku import Variables
 from sys import stderr
 import math
@@ -40,6 +41,40 @@ def parse_sudoku(sudoku_file):
 
     return (variables, constraints)
 
+def clauses_to_cnf_file(clauses, variables, cnf_file):
+    """
+    Keyword arguments:
+    clauses -- list(list(int))
+    variables -- Variables
+    cnf_file -- string
+    """
+    with open(cnf_file, "w") as f:
+        print("p cnf {} {}".format(variables.get_max_index(), len(clauses)), file=f)
+
+        for clause in clauses:
+            print("{} 0".format(" ".join(map(lambda lit: str(lit), clause))), file=f)
+
+def call_solver(solver, cnf_file):
+    """
+    Keyword arguments:
+    solver -- string
+    cnf_file -- string
+
+    Returns:
+    string
+    """
+    if solver == "clasp":
+        arguments = ["clasp", cnf_file]
+    elif solver == "glucose":
+        arguments = ["glucose", "-model", cnf_file]
+    else:
+        print("Unsupported solver!")
+        sys.exit(1)
+
+    p = Popen(arguments, stdin=PIPE, stdout=PIPE, stderr=PIPE, bufsize=-1)
+    output, error = p.communicate()
+    return output.decode("utf-8")
+
 def parse_solver_output(output_str, variables):
     """
     SAT solvers show the satisfiability on a line prefixed with `s` and the
@@ -51,35 +86,20 @@ def parse_solver_output(output_str, variables):
     variables -- Variables
     """
     for line in output_str.split("\n"):
-        if line[0] == "v":
-            variable_assignments = line[1:].split()
-            print(variable_assignments)
-            for assignment_str in variable_assignments:
-                assignment = int(assignment_str)
+        if not line or line[0] != "v":
+            continue
+
+        # Remove leading 'v' and trailing '0'
+        variable_assignments = line[1:].split()[:-1]
+        for assignment_str in variable_assignments:
+            assignment = int(assignment_str)
+            # TODO: remove if statement once encoding works
+            if abs(assignment) <= 729:
                 variables.set_value(abs(assignment), True if assignment > 0 else False)
 
     if variables.get_value(0, 0, 1) == None:
         print("Not every variable was assigned a truth value!", file=stderr)
         sys.exit(1)
-
-def clauses_to_cnf(clauses, variables):
-    """
-    Keyword arguments:
-    clauses -- list(list(int))
-    variables -- Variables
-
-    Returns:
-    string
-    """
-    cnf = "p cnf {} {}".format(variables.get_max_index(), len(clauses))
-
-    for clause in clauses:
-        cnf += "\n"
-        for literal in clause:
-            cnf += str(literal) + " "
-        cnf += "0"
-
-    return cnf
 
 def variables_to_sudoku(variables):
     """
