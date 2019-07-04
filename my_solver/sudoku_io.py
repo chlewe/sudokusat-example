@@ -111,7 +111,7 @@ def variables_to_sudoku(variables):
     """
     width = variables.width
     char_length = int(math.log10(width))
-    block_length = int(math.sqr(width))
+    block_length = variables.grid_width
 
     # build ending and starting line of sudoku frame
     block_line = "-" * ((char_length + 1) * block_length + 1)
