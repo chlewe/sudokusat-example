@@ -72,5 +72,62 @@ def minimal_encoding(variables, constraints):
     return clauses
 
 
+def extended_encoding(variables, constraints):
+    clauses = minimal_encoding(variables, constraints)
+    width = variables.width
+    subgrid_width = variables.subgrid_width
+    subgrids_per_dim = variables.subgrids_per_dim
+
+    """
+    Each cell has at most one number
+    """
+    for x in range(width):
+        for y in range(width):
+            for z in range(1, width):
+                for i in range(z + 1, width + 1):
+                    clause = (-variables.get_index(x, y, z), -variables.get_index(x, y, i))
+                    clauses.add(clause)
+
+    """
+    Each number occurs at least once per row
+    """
+    for z in range(1, width + 1):
+        for y in range(0, width):
+            clause = list()
+            for x in range(width):
+                clause.append(variables.get_index(x, y, z))
+
+            clauses.add(tuple(clause))
+
+    """
+    Each number occurs at least once per column
+    """
+    for z in range(1, width + 1):
+        for x in range(width):
+            clause = list()
+            for y in range(width):
+                clause.append(variables.get_index(x, y, z))
+
+            clauses.add(tuple(clause))
+
+    """
+    Each number occurs at least once per subgrid
+    """
+    for i in range(subgrids_per_dim):
+        for j in range(subgrids_per_dim):
+            for rel_x in range(0, subgrid_width):
+                for rel_y in range(0, subgrid_width):
+                    x = subgrid_width * i + rel_x
+                    y = subgrid_width * j + rel_y
+                    clause = list()
+
+                    for z in range(1, width + 1):
+                        clause.append(variables.get_index(x, y, z))
+
+                    clauses.add(tuple(clause))
+
+    return clauses
+
+
 def visualise_clause(clause, variables):
     return list(map(lambda x: ("+" if x >= 0 else "-") + str(variables._index_to_coordinates(abs(x))), clause))

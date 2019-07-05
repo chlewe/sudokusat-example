@@ -3,7 +3,7 @@
 import sys
 import os
 
-from encoding import minimal_encoding
+from encoding import *
 from sudoku_io import *
 from sys import stderr
 
@@ -22,10 +22,10 @@ if __name__ == "__main__":
 
     print("Generating CNF file...", file=stderr)
     variables, constraints = parse_sudoku(path_to_task)
-    sat_problem = minimal_encoding(variables, constraints)
+    sat_problem = extended_encoding(variables, constraints)
     clauses_to_cnf_file(sat_problem, variables, cnf_file)
 
-    print("Waiting for the SAT solver...", file=stderr)
+    print("Waiting for SAT solver...", file=stderr)
     output = call_solver(sat_solver, cnf_file)
 
     print("Generating solution from solver output...", file=stderr)
