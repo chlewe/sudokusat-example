@@ -89,15 +89,16 @@ def parse_solver_output(output_str, variables):
         if not line or line[0] != "v":
             continue
 
-        # Remove leading 'v' and trailing '0'
-        variable_assignments = line[1:].split()[:-1]
+        # Remove leading 'v'
+        variable_assignments = line[1:].split()
+
         for assignment_str in variable_assignments:
             assignment = int(assignment_str)
-            # TODO: remove if statement once encoding works
-            if abs(assignment) <= 729:
-                variables.set_value(abs(assignment), True if assignment > 0 else False)
+            # Careful: can be trailing '0'
+            if assignment > 0:
+                variables.set_value(assignment)
 
-    if variables.get_value(0, 0, 1) == None:
+    if variables.get_value(0, 0) == None:
         print("Not every variable was assigned a truth value!", file=stderr)
         sys.exit(1)
 
