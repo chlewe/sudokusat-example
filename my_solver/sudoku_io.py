@@ -111,29 +111,26 @@ def variables_to_sudoku(variables):
     string
     """
     width = variables.width
-    char_length = int(math.log10(width))
-    block_length = variables.grid_width
+    subgrid_width = variables.subgrid_width
+    cell_width = variables.cell_width
+    subgrids_per_dim = variables.subgrids_per_dim
 
     # build ending and starting line of sudoku frame
-    block_line = "-" * ((char_length + 1) * block_length + 1)
-    start_end_line = "+" + "+".join(block_line) + "+"
-    print(start_end_line)
+    subgrid_bar = "-" * ((cell_width + 1) * subgrid_width + 1) + "+"
+    horizontal_bar = "+" + subgrid_bar * subgrids_per_dim
+    print(horizontal_bar)
 
-    for row_block in range(block_length):
-        for  row in range(block_length):
+    for subgrid_row in range(subgrids_per_dim):
+        for row in range(subgrid_width):
             line = ""
-            for col_block in range(block_length):
-                block_line = "| "
-                for col in range(block_length):
-                    for number in range(width):
-                        x = row_block * block_length + row + 1
-                        y = col_block * block_length + col + 1
-                        z = number + 1
-                        if variables.get_value(x, y, z):
-                            n = " " * (char_length - len(str(z))) + z + " "
-                            block_line += n
-                            break
-                line += block_line
+            for subgrid_col in range(subgrids_per_dim):
+                subgrid_line = "| "
+                for col in range(subgrid_width):
+                    x = subgrid_row * subgrid_width + row
+                    y = subgrid_col * subgrid_width + col
+                    number = str(variables.get_value(x, y))
+                    subgrid_line += " " * (cell_width - len(number)) + number + " "
+                line += subgrid_line
             line += "|"
             print(line)
-        print(start_end_line)
+        print(horizontal_bar)

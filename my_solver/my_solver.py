@@ -32,6 +32,6 @@ if __name__ == "__main__":
     print("Generating solution from solver output...", file=stderr)
     parse_solver_output(output, variables)
 
-    print(variables_to_sudoku(variables))
+    variables_to_sudoku(variables)
 
     print("Done.", file=stderr)
