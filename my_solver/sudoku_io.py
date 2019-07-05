@@ -67,6 +67,8 @@ def call_solver(solver, cnf_file):
         arguments = ["clasp", cnf_file]
     elif solver == "glucose":
         arguments = ["glucose", "-model", cnf_file]
+    elif solver == "glucose-syrup":
+        arguments = ["glucose-syrup", "-model", cnf_file]
     else:
         print("Unsupported solver!")
         sys.exit(1)
