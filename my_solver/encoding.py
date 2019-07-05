@@ -3,7 +3,7 @@ import sys
 from sudoku import Variables
 
 def minimal_encoding(variables, constraints):
-    clauses = list()
+    clauses = set()
     width = variables.width
     subgrid_width = variables.subgrid_width
     subgrids_per_dim = variables.subgrids_per_dim
@@ -17,7 +17,7 @@ def minimal_encoding(variables, constraints):
             for z in range(1, width + 1):
                 clause.append(variables.get_index(x, y, z))
 
-            clauses.append(clause)
+            clauses.add(tuple(clause))
 
     """
     Each number occurs at most once per row
@@ -26,8 +26,8 @@ def minimal_encoding(variables, constraints):
         for y in range(width):
             for x in range(width - 1):
                 for i in range(x + 1, width):
-                    clause = [-variables.get_index(x, y, z), -variables.get_index(i, y, z)]
-                    clauses.append(clause)
+                    clause = (-variables.get_index(x, y, z), -variables.get_index(i, y, z))
+                    clauses.add(clause)
 
     """
     Each number occurs at most once per column
@@ -36,8 +36,8 @@ def minimal_encoding(variables, constraints):
         for x in range(width):
             for y in range(width - 1):
                 for i in range(y + 1, width):
-                    clause = [-variables.get_index(x, y, z), -variables.get_index(x, i, z)]
-                    clauses.append(clause)
+                    clause = (-variables.get_index(x, y, z), -variables.get_index(x, i, z))
+                    clauses.add(clause)
 
     """
     Each number occurs at most once per subgrid
@@ -52,18 +52,18 @@ def minimal_encoding(variables, constraints):
 
                         for rel_y2 in range(rel_y1 + 1, subgrid_width):
                             y2 = subgrid_width * i + rel_y2
-                            clause = [-variables.get_index(x1, y1, z), -variables.get_index(x1, y2, z)]
-                            clauses.append(clause)
+                            clause = (-variables.get_index(x1, y1, z), -variables.get_index(x1, y2, z))
+                            clauses.add(clause)
                         for rel_x2 in range(rel_x1 + 1, subgrid_width):
                             x2 = subgrid_width * i + rel_x2
-                            clause = [-variables.get_index(x1, y1, z), -variables.get_index(x2, y1, z)]
-                            clauses.append(clause)
+                            clause = (-variables.get_index(x1, y1, z), -variables.get_index(x2, y1, z))
+                            clauses.add(clause)
 
     """
-    Already filled-in fields.
+    Each pre-assigned cell has the correct number
     """
     for name in constraints:
-        clauses.append([name])
+        clauses.add((name, ))
 
     #for clause in clauses:
     #    coord_clause = visualise_clause(clause, variables)

@@ -52,7 +52,7 @@ def clauses_to_cnf_file(clauses, variables, cnf_file):
         print("p cnf {} {}".format(variables.get_max_index(), len(clauses)), file=f)
 
         for clause in clauses:
-            print("{} 0".format(" ".join(map(lambda lit: str(lit), clause))), file=f)
+            print("{} 0".format(" ".join(map(lambda lit: str(lit), list(clause)))), file=f)
 
 def call_solver(solver, cnf_file):
     """
