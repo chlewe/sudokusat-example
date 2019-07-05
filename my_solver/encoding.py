@@ -1,4 +1,5 @@
 import sys
+
 from sudoku import Variables
 
 def minimal_encoding(variables, constraints):
@@ -8,9 +9,7 @@ def minimal_encoding(variables, constraints):
     subgrids_per_dim = variables.subgrids_per_dim
 
     """
-    bigwedge_{x=1}^{9} bigwedge_{y=1}^{9} bigvee_{z=1}{9} s_xyz
-
-    "Each cell has at least one number"
+    Each cell has at least one number
     """
     for x in range(width):
         for y in range(width):
@@ -21,44 +20,44 @@ def minimal_encoding(variables, constraints):
             clauses.append(clause)
 
     """
-    bigwedge_{y=1}^{9} bigwedge_{z=1}^{9} bigwedge_{x=1}{8} bigwedge_{i=x+1}^{9} (neg s_xyz or neg x_iyz)
-
-    "Each number occurs at most once per row"
+    Each number occurs at most once per row
     """
-    for y in range(width):
-        for z in range(1, width + 1):
+    for z in range(1, width + 1):
+        for y in range(width):
             for x in range(width - 1):
                 for i in range(x + 1, width):
                     clause = [-variables.get_index(x, y, z), -variables.get_index(i, y, z)]
                     clauses.append(clause)
 
     """
-    bigwedge_{x=1}^{9} bigwedge_{z=1}^{9} bigwedge_{y=1}{8} bigwedge_{i=y+1}^{9} (neg s_xyz or neg x_xiz)
-
-    "Each number occurs at most once per column"
+    Each number occurs at most once per column
     """
-    for x in range(width):
-        for z in range(1, width + 1):
+    for z in range(1, width + 1):
+        for x in range(width):
             for y in range(width - 1):
                 for i in range(y + 1, width):
                     clause = [-variables.get_index(x, y, z), -variables.get_index(x, i, z)]
                     clauses.append(clause)
 
     """
-    bigwedge_{z=1}^{9} bigwedge_{i = 0}^{2} bigwedge_{j = 0}^{2} bigwedge_{x=1}^{3} bigwedge_{y=1}{3} bigwedge_{k=y+1}^{3} (neg s_(3i+x)(3j+y)z or neg x_(3i+x)(3j+k)z)
+    Each number occurs at most once per subgrid
     """
-    # FIXME
-    #for z in range(width):
-    #    for i in range(subgrids_per_dim):
-    #        for j in range(subgrids_per_dim):
-    #            for (x, y) in get_grid_xy(variables, i, j):
-    #                for _x in range(x, i + subgrid_width):
-    #                    clause = [-variables.get_index(x, y, z), -variables.get_index(_x, y, z)]
-    #                    clauses.append(clause)
+    for z in range(1, width + 1):
+        for i in range(subgrids_per_dim):
+            for j in range(subgrids_per_dim):
+                for rel_x1 in range(0, subgrid_width):
+                    for rel_y1 in range(0, subgrid_width):
+                        x1 = subgrid_width * i + rel_x1
+                        y1 = subgrid_width * j + rel_y1
 
-    #                for _y in range(y, j + subgrid_width):
-    #                    clause = [-variables.get_index(x, y, z), -variables.get_index(x, _y, z)]
-    #                    clauses.append(clause)
+                        for rel_y2 in range(rel_y1 + 1, subgrid_width):
+                            y2 = subgrid_width * i + rel_y2
+                            clause = [-variables.get_index(x1, y1, z), -variables.get_index(x1, y2, z)]
+                            clauses.append(clause)
+                        for rel_x2 in range(rel_x1 + 1, subgrid_width):
+                            x2 = subgrid_width * i + rel_x2
+                            clause = [-variables.get_index(x1, y1, z), -variables.get_index(x2, y1, z)]
+                            clauses.append(clause)
 
     """
     Already filled-in fields.
@@ -72,13 +71,6 @@ def minimal_encoding(variables, constraints):
 
     return clauses
 
-
-def get_grid_xy(variables, grid_row_x, grid_column_y):
-    xy = list()
-    for x in range(grid_row_x, grid_row_x + variables.subgrid_width):
-        for y in range(grid_column_y, grid_column_y + variables.subgrid_width):
-            xy.append((x, y))
-    return xy
 
 def visualise_clause(clause, variables):
     return list(map(lambda x: ("+" if x >= 0 else "-") + str(variables._index_to_coordinates(abs(x))), clause))

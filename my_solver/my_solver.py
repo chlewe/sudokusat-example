@@ -27,11 +27,9 @@ if __name__ == "__main__":
 
     print("Waiting for the SAT solver...", file=stderr)
     output = call_solver(sat_solver, cnf_file)
-    print(output)
 
     print("Generating solution from solver output...", file=stderr)
     parse_solver_output(output, variables)
 
     variables_to_sudoku(variables)
-
     print("Done.", file=stderr)

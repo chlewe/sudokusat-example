@@ -99,7 +99,7 @@ def parse_solver_output(output_str, variables):
                 variables.set_value(assignment)
 
     if variables.get_value(0, 0) == None:
-        print("Not every variable was assigned a truth value!", file=stderr)
+        print("SAT solver evaluated Sudoku encoding as undecidable!", file=stderr)
         sys.exit(1)
 
 def variables_to_sudoku(variables):
