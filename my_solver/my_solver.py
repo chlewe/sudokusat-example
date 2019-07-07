@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import hashlib
 import sys
 import os
 
@@ -18,12 +19,15 @@ if __name__ == "__main__":
 
     print("running {} {} {}".format(executable, sat_solver, path_to_task), file=stderr)
 
-    cnf_dir = os.path.dirname(__file__)
-    cnf_file = os.path.join(cnf_dir, "sudoku.cnf")
 
     print("Generating CNF file...", file=stderr)
     variables, constraints = parse_sudoku(path_to_task)
     sat_problem = extended_encoding(variables, constraints)
+
+    header_hash = hashlib.md5()
+    header_hash.update(header.encode('UTF-8'))
+    cnf_dir = os.path.dirname(__file__)
+    cnf_file = os.path.join(cnf_dir, "cnf-files", header_hash.hexdigest()) + ".cnf"
     clauses_to_cnf_file(sat_problem, variables, cnf_file)
 
     print("Waiting for SAT solver...", file=stderr)
