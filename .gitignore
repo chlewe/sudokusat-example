@@ -11,3 +11,5 @@ env/
 Vagrantfile
 .vagrant
 .idea
+Pipfile
+my_solver/sudoku.cnf

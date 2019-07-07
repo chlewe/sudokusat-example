@@ -18,7 +18,8 @@ if __name__ == "__main__":
 
     print("running {} {} {}".format(executable, sat_solver, path_to_task), file=stderr)
 
-    cnf_file = "/home/user/satSolving/sudokusat-example/my_solver/sudoku.cnf"
+    cnf_dir = os.path.dirname(__file__)
+    cnf_file = os.path.join(cnf_dir, "sudoku.cnf")
 
     print("Generating CNF file...", file=stderr)
     variables, constraints = parse_sudoku(path_to_task)
