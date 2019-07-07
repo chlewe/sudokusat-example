@@ -10,6 +10,6 @@ _downloaded/
 env/
 Vagrantfile
 .vagrant
-.idea
+.idea/
 Pipfile
-my_solver/sudoku.cnf
+*.cnf
