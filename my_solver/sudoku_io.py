@@ -12,15 +12,17 @@ def parse_sudoku(sudoku_file):
     sudoku_file -- string
 
     Returns:
-    (Variables, set(int))
+    (Variables, set(int), string)
     """
     with open(sudoku_file, "r") as f:
         # Skip puzzle title, number of tasks, task number
-        f.readline()
-        f.readline()
-        f.readline()
+        header = f.readline()
+        header += f.readline()
+        header += f.readline()
+        last_header_line = f.readline()
+        header += last_header_line[:-1]
 
-        width = int(re.findall(r"\d+", f.readline())[0])
+        width = int(re.findall(r"\d+", last_header_line)[0])
         variables = Variables(width)
         constraints = set()
 
@@ -39,7 +41,7 @@ def parse_sudoku(sudoku_file):
 
             row_index += 1
 
-    return (variables, constraints)
+    return (variables, constraints, header)
 
 def clauses_to_cnf_file(clauses, variables, cnf_file):
     """
@@ -104,10 +106,11 @@ def parse_solver_output(output_str, variables):
         print("SAT solver evaluated Sudoku encoding as undecidable!", file=stderr)
         sys.exit(1)
 
-def variables_to_sudoku(variables):
+def variables_to_sudoku(variables, header):
     """
     Keyword arguments:
     variables -- Variables
+    header -- string
 
     Returns:
     string
@@ -116,6 +119,8 @@ def variables_to_sudoku(variables):
     subgrid_width = variables.subgrid_width
     cell_width = variables.cell_width
     subgrids_per_dim = variables.subgrids_per_dim
+
+    print(header)
 
     # build ending and starting line of sudoku frame
     subgrid_bar = "-" * ((cell_width + 1) * subgrid_width + 1) + "+"

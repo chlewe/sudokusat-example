@@ -21,7 +21,7 @@ if __name__ == "__main__":
 
 
     print("Generating CNF file...", file=stderr)
-    variables, constraints = parse_sudoku(path_to_task)
+    variables, constraints, header = parse_sudoku(path_to_task)
     sat_problem = extended_encoding(variables, constraints)
 
     header_hash = hashlib.md5()
@@ -36,5 +36,5 @@ if __name__ == "__main__":
     print("Generating solution from solver output...", file=stderr)
     parse_solver_output(output, variables)
 
-    variables_to_sudoku(variables)
+    variables_to_sudoku(variables, header)
     print("Done.", file=stderr)
