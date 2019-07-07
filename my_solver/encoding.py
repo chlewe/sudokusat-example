@@ -51,13 +51,15 @@ def minimal_encoding(variables, constraints):
                         y1 = subgrid_width * j + rel_y1
 
                         for rel_y2 in range(rel_y1 + 1, subgrid_width):
-                            y2 = subgrid_width * i + rel_y2
+                            y2 = subgrid_width * j + rel_y2
                             clause = (-variables.get_index(x1, y1, z), -variables.get_index(x1, y2, z))
                             clauses.add(clause)
                         for rel_x2 in range(rel_x1 + 1, subgrid_width):
-                            x2 = subgrid_width * i + rel_x2
-                            clause = (-variables.get_index(x1, y1, z), -variables.get_index(x2, y1, z))
-                            clauses.add(clause)
+                            for rel_y3 in range(0, subgrid_width):
+                                x2 = subgrid_width * i + rel_x2
+                                y3 = subgrid_width * j + rel_y3
+                                clause = (-variables.get_index(x1, y1, z), -variables.get_index(x2, y3, z))
+                                clauses.add(clause)
 
     """
     Each pre-assigned cell has the correct number
