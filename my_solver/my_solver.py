@@ -28,6 +28,10 @@ if __name__ == "__main__":
     header_hash.update(header.encode('UTF-8'))
     cnf_dir = os.path.dirname(__file__)
     cnf_file = os.path.join(cnf_dir, "cnf-files", header_hash.hexdigest()) + ".cnf"
+
+    if not os.path.exists(os.path.dirname(cnf_file)):
+        os.makedirs(os.path.dirname(cnf_file))
+
     clauses_to_cnf_file(sat_problem, variables, cnf_file)
 
     print("Waiting for SAT solver...", file=stderr)
