@@ -2,7 +2,7 @@ import re
 import sys
 
 from subprocess import Popen, PIPE
-from sudoku import Variables
+from sudoku import Sudoku
 from sys import stderr
 import math
 
@@ -12,7 +12,7 @@ def parse_sudoku(sudoku_file):
     sudoku_file -- string
 
     Returns:
-    (Variables, set(int), string)
+    (Sudoku, string)
     """
     with open(sudoku_file, "r") as f:
         # Skip puzzle title, number of tasks, task number
@@ -23,7 +23,7 @@ def parse_sudoku(sudoku_file):
         header += last_header_line[:-1]
 
         width = int(re.findall(r"\d+", last_header_line)[0])
-        variables = Variables(width)
+        sudoku = Sudoku(width)
         constraints = set()
 
         row_index = 0
@@ -37,21 +37,21 @@ def parse_sudoku(sudoku_file):
                 if entry[0] == "_":
                     continue
                 else:
-                    constraints.add(variables.get_index(row_index, column_index, int(entry)))
+                    sudoku.set_value_xy(row_index, column_index, int(entry))
 
             row_index += 1
 
-    return (variables, constraints, header)
+    return (sudoku, header)
 
-def clauses_to_cnf_file(clauses, variables, cnf_file):
+def clauses_to_cnf_file(clauses, sudoku, cnf_file):
     """
     Keyword arguments:
     clauses -- list(list(int))
-    variables -- Variables
+    sudoku -- Sudoku
     cnf_file -- string
     """
     with open(cnf_file, "w") as f:
-        print("p cnf {} {}".format(variables.get_max_index(), len(clauses)), file=f)
+        print("p cnf {} {}".format(sudoku.get_max_index(), len(clauses)), file=f)
 
         for clause in clauses:
             print("{} 0".format(" ".join(map(lambda lit: str(lit), list(clause)))), file=f)
@@ -79,15 +79,15 @@ def call_solver(solver, cnf_file):
     output, error = p.communicate()
     return output.decode("utf-8")
 
-def parse_solver_output(output_str, variables):
+def parse_solver_output(output_str, sudoku):
     """
     SAT solvers show the satisfiability on a line prefixed with `s` and the
     model on one or many lines prefixed with `v`. This function parses this
-    output and updates the given variables accordingly.
+    output and updates the given sudoku accordingly.
 
     Keyword arguments:
     output_str -- string
-    variables -- Variables
+    sudoku -- Sudoku
     """
     for line in output_str.split("\n"):
         if not line or line[0] != "v":
@@ -100,44 +100,8 @@ def parse_solver_output(output_str, variables):
             assignment = int(assignment_str)
             # Careful: can be trailing '0'
             if assignment > 0:
-                variables.set_value(assignment)
+                sudoku.set_value(assignment)
 
-    if variables.get_value(0, 0) == None:
+    if sudoku.get_value(0, 0) == None:
         print("SAT solver evaluated Sudoku encoding as undecidable!", file=stderr)
         sys.exit(1)
-
-def variables_to_sudoku(variables, header):
-    """
-    Keyword arguments:
-    variables -- Variables
-    header -- string
-
-    Returns:
-    string
-    """
-    width = variables.width
-    subgrid_width = variables.subgrid_width
-    cell_width = variables.cell_width
-    subgrids_per_dim = variables.subgrids_per_dim
-
-    print(header)
-
-    # build ending and starting line of sudoku frame
-    subgrid_bar = "-" * ((cell_width + 1) * subgrid_width + 1) + "+"
-    horizontal_bar = "+" + subgrid_bar * subgrids_per_dim
-    print(horizontal_bar)
-
-    for subgrid_row in range(subgrids_per_dim):
-        for row in range(subgrid_width):
-            line = ""
-            for subgrid_col in range(subgrids_per_dim):
-                subgrid_line = "| "
-                for col in range(subgrid_width):
-                    x = subgrid_row * subgrid_width + row
-                    y = subgrid_col * subgrid_width + col
-                    number = str(variables.get_value(x, y))
-                    subgrid_line += " " * (cell_width - len(number)) + number + " "
-                line += subgrid_line
-            line += "|"
-            print(line)
-        print(horizontal_bar)
