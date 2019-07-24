@@ -2,7 +2,7 @@ import re
 import sys
 
 from subprocess import Popen, PIPE
-from sudoku import Sudoku
+from utils.sudoku import Sudoku
 from sys import stderr
 import math
 

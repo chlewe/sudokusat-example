@@ -1,6 +1,6 @@
 import sys
 
-from sudoku import Sudoku
+from utils.sudoku import Sudoku
 from sys import stderr
 
 

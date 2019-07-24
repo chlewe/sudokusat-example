@@ -3,8 +3,9 @@
 import sys
 import os
 
-from encoding import sudoku_to_clauses
-from sudoku_io import *
+from utils.encoding import sudoku_to_clauses
+from utils.io import *
+from utils.signals import handler
 from sys import stderr
 
 if __name__ == "__main__":
