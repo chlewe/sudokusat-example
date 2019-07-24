@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import signal
 import sys
 import os
 
@@ -31,6 +32,10 @@ if __name__ == "__main__":
 
     print("Saving clauses to \'{}\'...".format(cnf_file), file=stderr)
     clauses_to_cnf_file(sat_problem, sudoku, cnf_file)
+
+    # Signal setup
+    signal.signal(signal.SIGTERM, handler)
+    signal.signal(signal.SIGINT, handler)
 
     print("Waiting for SAT solver...", file=stderr)
     output = call_solver(sat_solver, cnf_file)
